@@ -2,6 +2,7 @@ import { commands as chapterCommands } from "@/features/chapters/commands";
 import { commands as membershipCommands } from "@/features/membership/commands";
 import { commands as passengerCommands } from "@/features/passengers/commands";
 import { commands as profileCommands } from "@/features/profile/commands";
+import { commands as rideCommands } from "@/features/rides/commands";
 import type { AdminScope, Perspective } from "@/lib/access";
 import { collectCommands } from "@/lib/commands";
 import type {
@@ -25,6 +26,7 @@ export type AdminCommandContext = {
 const CONTRIBUTORS: readonly CommandContributor[] = [
   membershipCommands,
   passengerCommands,
+  rideCommands,
   chapterCommands,
   profileCommands,
 ];

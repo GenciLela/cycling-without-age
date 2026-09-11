@@ -537,3 +537,69 @@ JSON, or a payload that fails the caller's Zod schema all return `null` and the 
 back to its no-draft copy. Nothing from `sessionStorage` is ever trusted as input to a write:
 the Book-a-ride confirmation only *displays* the draft. When ride requests become real rows,
 the draft stays a UI convenience and the Server Action re-validates from scratch.
+
+## Passenger perspective (COD-176)
+
+`/passenger/*` is the first surface built for the people the movement exists for, and it is
+shaped by that rather than by the admin shell. Four things are structural.
+
+### The shell owns the type scale and the nav; it guards nothing
+
+`src/app/passenger/layout.tsx` sets `text-lg` for the whole perspective — **18px is the base
+size here**, not 16 — so anything that steps down from it does so deliberately. It also
+reserves the height of the fixed bottom nav plus `env(safe-area-inset-bottom)`.
+
+It guards nothing at all, which is deliberate twice over: a Layout is not a security boundary
+(every page below re-guards), and `/passenger` itself is **open to guests**, because the
+chapter page sends people here before they have an account. The guest branch renders the same
+red button; `/passenger/book` is behind `requireAuth`, so tapping it becomes a sign-in with a
+`?next=` rather than a wall.
+
+`PassengerNav` is four labelled tabs — Home, My rides, Messages, Profile. Messages exists
+before the feature does, on purpose: the four destinations are what someone learns in the
+first minute, and a tab that appears later moves everything they had just learned.
+
+### Red appears exactly once per screen
+
+The home screen's booking button is the only red thing on it (BRAND.md § Colors — red is
+reserved). That is why the nav has no red active state, why `RideStatus` renders a cancelled
+or declined ride in warm grey rather than red, and why the cancel *confirmation* button is
+red while the cancel *trigger* is an outline button: the red always marks the thing the
+screen is for.
+
+### `RideRequest` is phase 1 of the lifecycle, and stops there
+
+The row carries a **preferred day and a part of that day**, not a slot. A Chapter Operating
+Calendar does not exist yet, and promising a time we cannot keep is worse than asking for one
+we can move. `rides.requestRide` enforces the envelope — `rideDateWindow` opens at **UTC
+today** so that no local tomorrow can read as the past, closes at `RIDE_HORIZON_DAYS`, and
+refuses a second open request for the same rider on the same day. `preferredDate` is a
+`@db.Date` parsed and formatted in UTC on both sides, so the day that was picked is the day
+that is stored.
+
+Per CWA's ride models the schema has to grow a destination and a return leg without a
+rewrite; nothing here forecloses that, and nothing here pretends to implement it.
+
+### The authorisation is the lookup, and then the membership
+
+`use-cases/request-passenger-ride` asks two questions, and both are load-bearing.
+
+**Whose rider is this.** `passengers.listPassengersManagedBy(userId)` by construction only
+returns rows whose `managedByUserId` is the caller — a passenger who signed up alone owns
+their own row, a relative's rows point at the relative. A `passengerId` posted from outside is
+therefore simply absent from the list, and the chapter is read off the resolved rider rather
+than accepted from the request, so a forged `chapterId` has nowhere to enter.
+
+**Are they still in the chapter.** A `Passenger` row has no relation to `Member` and nothing
+cascades between them, so `removeFromChapter` deletes the membership and leaves the rider row
+standing. The page guard does not catch this either: `redirectIfElsewhere` returns early when
+`availablePerspectives` is empty, and a removed passenger with no other role has exactly zero.
+Without a live `membership.getMemberRoles(userId, chapterId)` check, someone a chapter had
+just removed would keep filing requests into that chapter's list. This is the second facade
+that makes the booking a genuine use case rather than an Action.
+
+`src/use-cases/request-passenger-ride.test.ts` guards both.
+
+Cancellation is the mirror image: `rides.cancelRide` matches the row's `requestedByUserId`
+against the session the guard already proved, and answers a stranger's id with `null` — the
+same outcome the Action reports for success, so it cannot be used to probe for ride ids.

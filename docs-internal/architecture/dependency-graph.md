@@ -19,6 +19,7 @@ graph TD
     ACT6[app/admin/chapters/actions]
     ACT7[app/admin/countries/actions]
     ACT8[features/accounts/actions]
+    ACT9[app/passenger/actions]
   end
   subgraph Orchestration
     U1[use-cases/build-session-access]
@@ -34,6 +35,8 @@ graph TD
     U11[use-cases/invite-chapter-user]
     U12[use-cases/claim-account]
     U13[use-cases/manage-chapter]
+    U14[use-cases/request-passenger-ride]
+    U15[use-cases/list-passenger-rides]
   end
   subgraph Features
     F1[features/chapters facade]
@@ -42,10 +45,12 @@ graph TD
     F4[features/passengers facade]
     F5[features/activity facade]
     F6[features/accounts facade]
+    F7[features/rides facade]
     CM1[features/chapters/commands]
     CM2[features/membership/commands]
     CM3[features/profile/commands]
     CM4[features/passengers/commands]
+    CM5[features/rides/commands]
   end
   subgraph Data
     S1[chapters/services]
@@ -54,6 +59,7 @@ graph TD
     S4[passengers/services]
     S5[activity/services]
     S6[accounts/services]
+    S7[rides/services]
     DB[(MySQL via lib/prisma)]
   end
   subgraph Infrastructure
@@ -78,6 +84,19 @@ graph TD
   CMD --> CM2
   CMD --> CM3
   CMD --> CM4
+  CMD --> CM5
+
+  A --> ACT9
+  A --> U15
+  A --> F4
+  A --> F7
+  ACT9 --> F7
+  ACT9 --> U14
+  U14 --> F2
+  U14 --> F4
+  U14 --> F7
+  U15 --> F4
+  U15 --> F7
 
   A --> ACT1
   A --> ACT2
@@ -161,6 +180,8 @@ graph TD
   F4 --> S4
   F5 --> S5
   F6 --> S6
+  F7 --> S7
+  S7 --> DB
   S1 --> DB
   S2 --> DB
   S3 --> DB
@@ -184,6 +205,8 @@ graph TD
 | `provision-assisted-passenger` | `accounts`, `membership`, `passengers`, `activity` | One "add a passenger at the door" makes the account, joins the chapter, creates the rider row and records who created it — four features, and the helper rule decides whether the rider row points at the new account or at nobody. |
 | `invite-chapter-user` | `accounts`, `chapters`, `membership`, `profile` (+ `activity`, `mailer`) | Provisioning the account, granting the chapter role, and mailing the invitation in the invitee's own locale (hence `profile`) are three features plus infrastructure. |
 | `claim-account` | `accounts`, `activity` | Stamping `claimedAt` and writing the `accountClaimed` line are two features, and the pair has to stay together — a claim nobody can see in the history is not an audit trail. |
+| `request-passenger-ride` | `membership`, `passengers`, `rides` | Booking is three questions: *may this account book for this rider* (`passengers` — `listPassengersManagedBy` is scoped to the caller, so a `passengerId` posted from outside is simply absent from the list), *is the account still in that rider's chapter* (`membership` — a `Passenger` row outlives the `Member` row, and the page guard lets a removed account through because it has no perspective at all), and *is this day bookable* (`rides`). Nothing downstream repeats any of them. |
+| `list-passenger-rides` | `passengers`, `rides` | The home screen's "your next ride" and the rides tab ask the same two-facade question, and a second copy of it would be a second chance to forget which riders belong to the account. |
 | `manage-chapter` | `chapters`, `activity` | Creating, editing or deleting a chapter is a `chapters` write plus the history line that makes it legible on the chapter's own page. `diffChapter` turns one autosave into one `chapterUpdated` event per field that actually changed (a moved pin and its new address fold into one `location` change), and the delete event is recorded *global* because the row it would point at is gone. |
 
 No use case was added for the admin shell. `G --> F1` now carries two guards:
@@ -204,6 +227,15 @@ Single-facade work has no use case: `lib/auth-guards` calls `chapters.getChapter
 and `profile.getProfile` (the admin passkey gate) directly, `app/admin/chapters/actions` calls
 the chapters facade directly, `features/membership/actions` calls the membership facade
 directly, and the passkey and pilot-next-steps actions call the profile facade directly.
+
+`app/passenger/actions` (ACT9) shows both halves of the use-case rule in one file.
+`bookRide` touches `passengers` and `rides`, so it delegates to `request-passenger-ride`
+(U14). `cancelRideRequest` touches only `rides`, so it calls the facade directly —
+`rides.cancelRide` matches the row's `requestedByUserId` against the session the guard
+already proved, which is domain validation rather than auth and therefore belongs in the
+facade. Both actions are behind `requireAuth` and the booking one behind a per-user rate
+limit; neither needs a chapter guard, because the chapter is read off the rider the account
+already owns rather than accepted from the request.
 
 `features/accounts` (F6) has no UI of its own either — its Server Actions (ACT8) are imported
 straight into the admin passengers and members screens, because "provision a user" is not a

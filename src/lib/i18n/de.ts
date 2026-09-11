@@ -702,6 +702,19 @@ const de: Dictionary = {
         generic: "Das hat nicht geklappt. Versuch es noch mal.",
       },
     },
+    rides: {
+      columns: {
+        rider: "Fahrgast",
+        day: "Tag",
+        when: "Zeit",
+        status: "Status",
+        chapter: "Ortsgruppe",
+        asked: "Angefragt",
+        contact: "Gebucht von",
+      },
+      empty:
+        "Noch keine Fahrtanfragen. Sobald ein Passagier eine stellt, landet sie hier.",
+    },
     passengers: {
       add: {
         open: "Passagier hinzufügen",
@@ -789,6 +802,123 @@ const de: Dictionary = {
     title: "Startseite für Passagiere",
     browsing: "Sie sehen {chapter}",
     noChapter: "Sie haben noch keine Ortsgruppe gewählt",
+    nav: {
+      label: "Bereiche für Passagiere",
+      home: "Start",
+      rides: "Meine Fahrten",
+      messages: "Nachrichten",
+      profile: "Profil",
+    },
+    home: {
+      greeting: "Guten Tag, {name}",
+      greetingGuest: "Recht auf Wind im Haar",
+      book: "Fahrt buchen",
+      bookHint: "Ehrenamtliche treten in die Pedale. Sie sitzen vorne.",
+      bookAria: "Eine Fahrt mit {chapter} buchen",
+      profileAria: "Ihr Profil",
+      signIn: "Anmelden",
+      nextRide: "Ihre nächste Fahrt",
+      withChapter: "Mit {chapter}",
+      noChapterYet:
+        "Sie haben noch keine Ortsgruppe gewählt. Wählen Sie eine — dann sind es bis zur Fahrt nur zwei Fingertipps.",
+      findChapter: "Ortsgruppe finden",
+      guestBody:
+        "Melden Sie sich an, und jemand nimmt Sie im Schritttempo mit — nichts zwischen Ihnen und der Straße.",
+    },
+    when: {
+      morning: "Am Vormittag",
+      afternoon: "Am Nachmittag",
+      any: "Zu jeder Tageszeit",
+    },
+    status: {
+      requested: "Angefragt",
+      confirmed: "Bestätigt",
+      declined: "Diesmal nicht",
+      cancelled: "Abgesagt",
+      completed: "Gefahren",
+    },
+    book: {
+      title: "Fahrt buchen",
+      close: "Schließen",
+      back: "Zurück",
+      next: "Weiter",
+      step: "Schritt {current} von {total}",
+      dayTitle: "An welchem Tag möchten Sie fahren?",
+      dayHint: "Wählen Sie einen Tag in den nächsten vier Wochen.",
+      tomorrow: "Morgen",
+      whenTitle: "Welche Tageszeit passt Ihnen?",
+      whoTitle: "Wer fährt mit?",
+      whoHint: "Wählen Sie die Person, die vorne sitzt.",
+      confirmTitle: "Stimmt das so?",
+      confirmWho: "Fahrgast",
+      confirmDay: "Tag",
+      confirmWhen: "Zeit",
+      confirmChapter: "Ortsgruppe",
+      noteLabel: "Sollen wir etwas wissen? (optional)",
+      notePlaceholder:
+        "Ein Rollator, eine Lieblingsstrecke, jemand kommt mit …",
+      submit: "Anfrage senden",
+      sending: "Wird gesendet …",
+      sent: "Ihre Anfrage liegt bei der Ortsgruppe.",
+      pending:
+        "Jemand von der Ortsgruppe stimmt Tag und Uhrzeit mit Ihnen ab. Fest ist noch nichts.",
+      errors: {
+        invalid:
+          "An dieser Anfrage ist etwas nicht angekommen. Bitte versuchen Sie es noch einmal.",
+        noPassenger:
+          "Zu Ihrem Konto gehört noch kein Fahrgast. Ihre Ortsgruppe kann einen anlegen.",
+        unknownPassenger:
+          "Diesen Fahrgast konnten wir Ihrem Konto nicht zuordnen.",
+        notAMember:
+          "Ihre Ortsgruppe hat Ihre Mitgliedschaft beendet, deshalb sind hier keine Fahrten mehr buchbar. Melden Sie sich bei ihr, falls Sie das überrascht.",
+        outOfRange: "Bitte wählen Sie einen Tag in den nächsten vier Wochen.",
+        duplicate: "Für diesen Tag haben Sie bereits eine Fahrt angefragt.",
+        tooMany:
+          "Das waren viele Anfragen auf einmal. Bitte in ein paar Minuten noch einmal.",
+        generic: "Das hat nicht geklappt. Bitte noch einmal versuchen.",
+      },
+    },
+    rides: {
+      title: "Meine Fahrten",
+      upcoming: "Kommt",
+      past: "Früher",
+      empty: "Noch keine Fahrten.",
+      emptyBody:
+        "Wenn Sie eine Fahrt anfragen, wartet sie hier, bis jemand sie bestätigt.",
+      book: "Fahrt buchen",
+      askedOn: "Angefragt am {date}",
+      note: "Ihre Notiz",
+      cancel: "Fahrt absagen",
+      cancelTitle: "Ihre Fahrt am {date} absagen?",
+      cancelBody:
+        "Die Ortsgruppe erfährt es sofort, und die Rikscha geht an jemand anderen. Sie können jederzeit neu anfragen.",
+      cancelConfirm: "Ja, absagen",
+      cancelKeep: "Behalten",
+      cancelled: "Ihre Fahrt ist abgesagt.",
+      cancelFailed: "Das hat nicht geklappt. Bitte noch einmal versuchen.",
+    },
+    messages: {
+      title: "Nachrichten",
+      empty: "Noch keine Nachrichten",
+      emptyBody:
+        "Bald kann Ihnen Ihre Ortsgruppe hier schreiben — eine Planänderung, ein Gruß von Ihrem Piloten. Bis dahin rufen sie an oder schreiben eine E-Mail.",
+    },
+    profile: {
+      title: "Profil",
+      rider: "Fahrgast",
+      born: "Geboren",
+      chapter: "Ihre Ortsgruppe",
+      noChapter: "Noch keine Ortsgruppe",
+      contact: "So erreichen wir Sie",
+      language: "Sprache",
+      account: "Passkeys und Anmeldung",
+      accountAction: "Konto öffnen",
+      perspective: "Ansicht wechseln",
+      viewAsAdmin: "Admin-Ansicht",
+      viewAsPilot: "Piloten-Ansicht",
+      managed: "Sie buchen für",
+      genders: { female: "Frau", male: "Mann", other: "Divers" },
+    },
   },
   account: {
     // du-Form: Das Konto teilen sich Admins, Piloten und Passagiere; die

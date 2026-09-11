@@ -54,6 +54,7 @@ model User {
   decidedApplications ChapterApplication[] @relation("decider")
   passengers          Passenger[]          @relation("manages")
   passengerProfile    Passenger?           @relation("self")
+  rideRequests        RideRequest[]        @relation("rideRequester")
   activityEvents      ActivityEvent[]      @relation("activitySubject")
   activityActions     ActivityEvent[]      @relation("activityActor")
 
@@ -152,6 +153,7 @@ model Organization {
   longitude    Float
   applications ChapterApplication[]
   passengers   Passenger[]
+  rideRequests RideRequest[]
   events       ActivityEvent[]
   serviceRadiusKm Int @default(10)
 
@@ -283,9 +285,60 @@ model Passenger {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  rideRequests RideRequest[]
+
   @@index([chapterId])
   @@index([managedByUserId])
   @@map("passenger")
+}
+
+enum RideTimeOfDay {
+  morning
+  afternoon
+  any
+}
+
+enum RideRequestStatus {
+  requested
+  confirmed
+  declined
+  cancelled
+  completed
+}
+
+/// A passenger's wish for a ride, not yet a Ride. It is phase 1 of the CWA ride
+/// lifecycle — the Ride Request List a scheduler works from — so it carries a
+/// preferred day and a rough part of that day rather than a slot: a chapter
+/// operating calendar does not exist yet, and promising a time we cannot keep is
+/// worse than asking for one we can move.
+model RideRequest {
+  id        String       @id @default(cuid())
+  chapterId String
+  chapter   Organization @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  passengerId String
+  passenger   Passenger @relation(fields: [passengerId], references: [id], onDelete: Cascade)
+
+  /// Who filled in the form — the passenger themselves, or the relative who
+  /// manages them. Both are kept: the roster names the passenger, the chapter
+  /// calls back whoever asked.
+  requestedByUserId String
+  requestedBy       User   @relation("rideRequester", fields: [requestedByUserId], references: [id], onDelete: Cascade)
+
+  preferredDate DateTime      @db.Date
+  timeOfDay     RideTimeOfDay
+  note          String?       @db.Text
+
+  status      RideRequestStatus @default(requested)
+  cancelledAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([chapterId, preferredDate])
+  @@index([passengerId, preferredDate])
+  @@index([requestedByUserId])
+  @@map("ride_request")
 }
 
 enum ActivityType {

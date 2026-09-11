@@ -175,6 +175,23 @@ export function formatMonthYearLong(
   }).format(toCalendarDate(value));
 }
 
+/**
+ * `Saturday, 7 March` (en-GB) · `Samstag, 7. März` (de-DE). No year: it reads
+ * the way a day is spoken, and every surface using it looks a month ahead at
+ * most, so the year would be noise rather than information.
+ */
+export function formatWeekdayDateLong(
+  value: Date | string,
+  locale: Locale,
+): string {
+  return dateTimeFormatter(locale, {
+    ...CALENDAR_UTC,
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  }).format(toCalendarDate(value));
+}
+
 /** `Sat, 03/07` (en-US) · `Sa., 07.03.` (de-DE) */
 export function formatShortDateWithWeekday(
   value: Date | string,
