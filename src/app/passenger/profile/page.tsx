@@ -4,21 +4,22 @@ import { headers } from "next/headers";
 import { Shield, UserRound } from "lucide-react";
 import { chapters } from "@/features/chapters";
 import { passengers } from "@/features/passengers";
-import { profile } from "@/features/profile";
+import { profile, type Gender } from "@/features/profile";
 import { availablePerspectives } from "@/lib/access";
 import { requirePerspective } from "@/lib/auth-guards";
 import { avatarSeed, avatarSvg } from "@/lib/avatar";
-import { formatDate, resolveLocale } from "@/lib/format";
+import { resolveLocale, toIsoDateUtc } from "@/lib/format";
 import { getDictionary, getLocale } from "@/lib/i18n";
 import { isPhoneTempEmail } from "@/lib/identity";
 import { PERSPECTIVE_HOME } from "@/lib/redirects";
-import { fill } from "@/lib/utils";
 import { AccountDialog } from "@/components/account-dialog";
 import { LanguagePicker } from "@/components/language-picker";
 import { PersonAvatar } from "@/components/person-avatar";
 import { SignOutButton } from "@/components/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RiderPanel } from "./_components/rider-panel";
+import type { RiderValues } from "./_components/rider-fields";
 
 export default function PassengerProfilePage() {
   return (
@@ -86,30 +87,32 @@ async function Profile() {
       </header>
 
       {own ? (
-        <Panel title={strings.rider}>
-          <RiderLink
-            href={`/passenger/profile/${own.id}`}
-            label={`${own.firstName} ${own.lastName}`}
-            value={formatDate(own.birthDate, notation)}
-            aria={fill(strings.editAria, { name: own.firstName })}
-            action={strings.edit}
-          />
-        </Panel>
+        <RiderPanel
+          passengerId={own.id}
+          title={strings.rider}
+          initial={toValues(own)}
+          locale={notation}
+          strings={dict.passenger.rider}
+        />
       ) : null}
 
       {managed.length > 0 ? (
-        <Panel title={strings.managed}>
+        <section className="mt-8">
+          <h2 className="text-2sm font-semibold tracking-wide text-ink-soft uppercase">
+            {strings.managed}
+          </h2>
           {managed.map((person) => (
-            <RiderLink
+            <RiderPanel
               key={person.id}
-              href={`/passenger/profile/${person.id}`}
-              label={`${person.firstName} ${person.lastName}`}
-              value={formatDate(person.birthDate, notation)}
-              aria={fill(strings.editAria, { name: person.firstName })}
-              action={strings.edit}
+              passengerId={person.id}
+              title={`${person.firstName} ${person.lastName}`}
+              initial={toValues(person)}
+              locale={notation}
+              strings={dict.passenger.rider}
+              level={3}
             />
           ))}
-        </Panel>
+        </section>
       ) : null}
 
       <Panel title={strings.chapter}>
@@ -209,34 +212,20 @@ function Panel({
   );
 }
 
-function RiderLink({
-  href,
-  label,
-  value,
-  aria,
-  action,
-}: {
-  href: string;
-  label: string;
-  value: string;
-  aria: string;
-  action: string;
-}) {
-  return (
-    <Link
-      href={href}
-      aria-label={aria}
-      className="flex min-h-14 flex-wrap items-baseline justify-between gap-2 px-5 py-3 transition-colors hover:bg-mint-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink motion-reduce:transition-none"
-    >
-      <span className="font-medium">{label}</span>
-      <span className="flex items-baseline gap-3">
-        <span className="text-2sm text-ink-soft">{value}</span>
-        <span className="text-2sm font-medium underline underline-offset-4">
-          {action}
-        </span>
-      </span>
-    </Link>
-  );
+/** The rider row as the panel speaks it: an ISO day for the date input, the
+ *  rest verbatim. Formatting for the eye happens in `displayValue`. */
+function toValues(person: {
+  firstName: string;
+  lastName: string;
+  birthDate: Date;
+  gender: Gender;
+}): RiderValues {
+  return {
+    firstName: person.firstName,
+    lastName: person.lastName,
+    birthDate: toIsoDateUtc(person.birthDate),
+    gender: person.gender,
+  };
 }
 
 function Row({ label, value }: { label: string; value: string }) {

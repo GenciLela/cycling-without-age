@@ -952,7 +952,6 @@ const de: Dictionary = {
     profile: {
       title: "Profil",
       rider: "Fahrgast",
-      born: "Geboren",
       chapter: "Ihre Ortsgruppe",
       noChapter: "Noch keine Ortsgruppe",
       contact: "So erreichen wir Sie",
@@ -964,8 +963,6 @@ const de: Dictionary = {
       viewAsPilot: "Piloten-Ansicht",
       managed: "Sie buchen für",
       genders: { female: "Frau", male: "Mann", other: "Divers" },
-      edit: "Ändern",
-      editAria: "Angaben von {name} ändern",
     },
     error: {
       title: "Das hat sich nicht laden lassen",
@@ -983,6 +980,8 @@ const de: Dictionary = {
       genders: { female: "Frau", male: "Mann", other: "Divers" },
       save: "Speichern",
       saving: "Wird gespeichert …",
+      cancel: "Abbrechen",
+      changeAria: "{field} ändern",
       saved: "Gespeichert.",
       back: "Profil",
       errors: {

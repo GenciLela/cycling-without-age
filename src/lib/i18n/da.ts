@@ -924,7 +924,6 @@ const da: Dictionary = {
     profile: {
       title: "Profil",
       rider: "Passager",
-      born: "Født",
       chapter: "Din lokalafdeling",
       noChapter: "Ingen lokalafdeling endnu",
       contact: "Sådan får vi fat i dig",
@@ -936,8 +935,6 @@ const da: Dictionary = {
       viewAsPilot: "Pilot-visning",
       managed: "Du bestiller for",
       genders: { female: "Kvinde", male: "Mand", other: "Andet" },
-      edit: "Ret",
-      editAria: "Ret {name}s oplysninger",
     },
     error: {
       title: "Det kunne ikke indlæses",
@@ -955,6 +952,8 @@ const da: Dictionary = {
       genders: { female: "Kvinde", male: "Mand", other: "Andet" },
       save: "Gem",
       saving: "Gemmer …",
+      cancel: "Annullér",
+      changeAria: "Ret {field}",
       saved: "Gemt.",
       back: "Profil",
       errors: {

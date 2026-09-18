@@ -925,7 +925,6 @@ const en = {
     profile: {
       title: "Profile",
       rider: "Rider",
-      born: "Born",
       chapter: "Your chapter",
       noChapter: "No chapter yet",
       contact: "How we reach you",
@@ -937,8 +936,6 @@ const en = {
       viewAsPilot: "Pilot view",
       managed: "You book for",
       genders: { female: "Woman", male: "Man", other: "Other" },
-      edit: "Change",
-      editAria: "Change {name}'s details",
     },
     error: {
       title: "That didn't load",
@@ -956,6 +953,8 @@ const en = {
       genders: { female: "Woman", male: "Man", other: "Other" },
       save: "Save",
       saving: "Saving…",
+      cancel: "Cancel",
+      changeAria: "Change {field}",
       saved: "Saved.",
       back: "Profile",
       errors: {
