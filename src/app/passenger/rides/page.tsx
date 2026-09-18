@@ -2,10 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, ChevronRight } from "lucide-react";
 import { requirePerspective } from "@/lib/auth-guards";
 import { resolveLocale, toIsoDateUtc } from "@/lib/format";
-import { getDictionary } from "@/lib/i18n";
+import { getDictionary, type Dictionary } from "@/lib/i18n";
+import { fill } from "@/lib/utils";
 import {
   Empty,
   EmptyDescription,
@@ -21,7 +22,6 @@ import {
   toRideView,
   type RideView,
 } from "../_components/ride-view";
-import { CancelRide, type CancelRideStrings } from "./_components/cancel-ride";
 
 export default function PassengerRidesPage() {
   return (
@@ -95,8 +95,7 @@ async function Rides() {
           title={strings.upcoming}
           rides={upcoming}
           showRider={people.length > 1}
-          noteLabel={strings.note}
-          cancel={strings}
+          detail={dict.passenger.detail}
         />
       ) : null}
 
@@ -105,8 +104,7 @@ async function Rides() {
           title={strings.past}
           rides={past}
           showRider={people.length > 1}
-          noteLabel={strings.note}
-          cancel={strings}
+          detail={dict.passenger.detail}
         />
       ) : null}
     </>
@@ -117,14 +115,12 @@ function Group({
   title,
   rides,
   showRider,
-  noteLabel,
-  cancel,
+  detail,
 }: {
   title: string;
   rides: RideView[];
   showRider: boolean;
-  noteLabel: string;
-  cancel: CancelRideStrings;
+  detail: Dictionary["passenger"]["detail"];
 }) {
   return (
     <section className="mt-8">
@@ -134,45 +130,30 @@ function Group({
       <ul className="mt-3 flex flex-col gap-3">
         {rides.map((ride) => (
           <li key={ride.id}>
-            <article className="flex flex-col gap-3 rounded-(--r-card) border border-line p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-xl font-medium">{ride.day}</p>
-                  <p className="text-ink-soft">{ride.when}</p>
-                  {showRider ? (
-                    <p className="mt-1 text-sm text-ink-soft">
-                      {ride.riderName}
-                    </p>
-                  ) : null}
-                </div>
-                <RideStatus
-                  status={ride.status}
-                  label={ride.statusLabel}
-                  className="shrink-0"
-                />
-              </div>
-
-              {ride.note ? (
-                <figure className="rounded-(--r-card) bg-mint-tint p-4">
-                  <figcaption className="text-2sm font-semibold tracking-wide text-ink-soft uppercase">
-                    {noteLabel}
-                  </figcaption>
-                  <blockquote className="mt-1 text-sm whitespace-pre-wrap">
-                    {ride.note}
-                  </blockquote>
-                </figure>
-              ) : null}
-
-              <p className="text-2sm text-ink-soft">{ride.askedOn}</p>
-
-              {ride.cancellable ? (
-                <CancelRide
-                  id={ride.id}
-                  day={ride.day}
-                  strings={cancel}
-                />
-              ) : null}
-            </article>
+            <Link
+              href={`/passenger/rides/${ride.id}`}
+              aria-label={fill(detail.openAria, { day: ride.day })}
+              className="flex items-center gap-4 rounded-(--r-card) border border-line p-5 transition-colors hover:bg-mint-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink motion-reduce:transition-none"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-xl font-medium">{ride.day}</span>
+                <span className="block text-ink-soft">{ride.when}</span>
+                {showRider ? (
+                  <span className="mt-1 block text-sm text-ink-soft">
+                    {ride.riderName}
+                  </span>
+                ) : null}
+              </span>
+              <RideStatus
+                status={ride.status}
+                label={ride.statusLabel}
+                className="shrink-0"
+              />
+              <ChevronRight
+                aria-hidden
+                className="size-5 shrink-0 text-ink-soft"
+              />
+            </Link>
           </li>
         ))}
       </ul>

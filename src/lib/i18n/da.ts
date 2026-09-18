@@ -892,6 +892,26 @@ const da: Dictionary = {
       cancelled: "Din tur er aflyst.",
       cancelFailed: "Det virkede ikke. Prøv igen.",
     },
+    detail: {
+      back: "Mine ture",
+      openAria: "Åbn din tur den {day}",
+      rider: "Passager",
+      chapter: "Lokalafdeling",
+      note: "Din besked",
+      reason: "Det skriver din lokalafdeling",
+      decidedOn: "Besvaret den {date}",
+      cancelledOn: "Aflyst den {date}",
+      requestedBody:
+        "Intet er fast endnu. En frivillig bekræfter dag og tidspunkt med dig.",
+      confirmedBody:
+        "Din lokalafdeling har dagen. De kontakter dig inden turen med tidspunkt og mødested.",
+      declinedBody:
+        "Desværre ikke den dag. Spørg om en anden — de fleste dage passer.",
+      cancelledBody: "Du har aflyst denne tur. Du kan altid spørge igen.",
+      completedBody:
+        "Du har været ude i vinden. Book den næste, når du har lyst.",
+      book: "Book en tur til",
+    },
     messages: {
       title: "Beskeder",
       empty: "Ingen beskeder endnu",

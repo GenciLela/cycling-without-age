@@ -919,6 +919,27 @@ const de: Dictionary = {
       cancelled: "Ihre Fahrt ist abgesagt.",
       cancelFailed: "Das hat nicht geklappt. Bitte noch einmal versuchen.",
     },
+    detail: {
+      back: "Meine Fahrten",
+      openAria: "Ihre Fahrt am {day} öffnen",
+      rider: "Fahrgast",
+      chapter: "Ortsgruppe",
+      note: "Ihre Notiz",
+      reason: "Das schreibt Ihre Ortsgruppe",
+      decidedOn: "Am {date} beantwortet",
+      cancelledOn: "Am {date} abgesagt",
+      requestedBody:
+        "Noch ist nichts fest. Eine freiwillige Person bestätigt Tag und Zeit mit Ihnen.",
+      confirmedBody:
+        "Ihre Ortsgruppe hat den Tag. Vor der Fahrt meldet sie sich mit Uhrzeit und Treffpunkt.",
+      declinedBody:
+        "An diesem Tag leider nicht. Fragen Sie einen anderen an — die meisten Tage klappen.",
+      cancelledBody:
+        "Sie haben diese Fahrt abgesagt. Sie können jederzeit wieder anfragen.",
+      completedBody:
+        "Sie waren im Fahrtwind unterwegs. Buchen Sie die nächste, wann immer Sie mögen.",
+      book: "Noch eine Fahrt buchen",
+    },
     messages: {
       title: "Nachrichten",
       empty: "Noch keine Nachrichten",

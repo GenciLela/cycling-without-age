@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { haptics } from "@/lib/native/haptics";
 import { fill } from "@/lib/utils";
@@ -37,6 +38,7 @@ export function CancelRide({
   day: string;
   strings: CancelRideStrings;
 }) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -48,6 +50,9 @@ export function CancelRide({
       if (result.ok) {
         haptics.success();
         toast.success(strings.cancelled);
+        // The ride's own page is where cancelling happens, and a cancelled ride
+        // is no longer a ride to look at. The list is.
+        router.push("/passenger/rides");
       } else {
         haptics.error();
         toast.error(strings.cancelFailed);

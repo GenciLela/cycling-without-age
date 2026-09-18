@@ -25,7 +25,10 @@ export type RideView = {
   statusLabel: string;
   chapterName: string;
   note: string | null;
+  declineReason: string | null;
   askedOn: string;
+  decidedOn: string | null;
+  cancelledOn: string | null;
   upcoming: boolean;
   cancellable: boolean;
 };
@@ -56,9 +59,20 @@ export function toRideView(
     statusLabel: dict.passenger.status[request.status],
     chapterName: request.chapter.name,
     note: request.note,
+    declineReason: request.declineReason,
     askedOn: fill(dict.passenger.rides.askedOn, {
       date: formatDate(request.createdAt, locale),
     }),
+    decidedOn: request.decidedAt
+      ? fill(dict.passenger.detail.decidedOn, {
+          date: formatDate(request.decidedAt, locale),
+        })
+      : null,
+    cancelledOn: request.cancelledAt
+      ? fill(dict.passenger.detail.cancelledOn, {
+          date: formatDate(request.cancelledAt, locale),
+        })
+      : null,
     upcoming,
     cancellable:
       upcoming &&

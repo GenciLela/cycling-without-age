@@ -894,6 +894,26 @@ const en = {
       cancelled: "Your ride is cancelled.",
       cancelFailed: "That didn't work. Try again.",
     },
+    detail: {
+      back: "My rides",
+      openAria: "Open your ride on {day}",
+      rider: "Rider",
+      chapter: "Chapter",
+      note: "Your note",
+      reason: "What your chapter wrote",
+      decidedOn: "Answered on {date}",
+      cancelledOn: "Cancelled on {date}",
+      requestedBody:
+        "Nothing is fixed yet. A volunteer will confirm the day and time with you.",
+      confirmedBody:
+        "Your chapter has the day. They will be in touch before the ride with the time and where to meet.",
+      declinedBody:
+        "Not this day, sadly. Ask for another one — most days work.",
+      cancelledBody: "You cancelled this ride. You can always ask again.",
+      completedBody:
+        "You were out in the wind. Book the next one whenever you like.",
+      book: "Book another ride",
+    },
     messages: {
       title: "Messages",
       empty: "No messages yet",
