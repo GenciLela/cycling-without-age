@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { passengers } from "@/features/passengers";
+import { gender } from "@/features/profile";
 import { rides, rideRequestForm } from "@/features/rides";
 import { requireAuth } from "@/lib/auth-guards";
 import { withinRateLimit } from "@/lib/rate-limit";
@@ -90,6 +92,61 @@ export async function cancelRideRequest(
     return { ok: true };
   } catch (error) {
     console.error("[passenger] ride cancel failed", error);
+    return { ok: false, error: "generic" };
+  }
+}
+
+export type UpdateRiderResult =
+  { ok: true } | { ok: false; error: "invalid" | "notYours" | "generic" };
+
+const riderInput = z.object({
+  passengerId: z.string().min(1).max(64),
+  firstName: z.string().trim().min(1).max(80),
+  lastName: z.string().trim().min(1).max(80),
+  birthDate: z.iso.date(),
+  gender,
+});
+
+/**
+ * Correcting a rider's details. Single-feature, so the Action calls the Facade
+ * directly — a use case here would only forward.
+ *
+ * `passengerId` is never trusted: the facade's write is scoped to the account
+ * that manages the row, so a foreign id updates nothing and comes back as
+ * `notYours` rather than as a silent success.
+ */
+export async function updateRiderAction(
+  input: unknown,
+): Promise<UpdateRiderResult> {
+  const session = await requireAuth();
+
+  if (
+    !withinRateLimit(`rider:${session.user.id}`, {
+      max: 20,
+      windowMs: 10 * 60_000,
+    })
+  ) {
+    return { ok: false, error: "generic" };
+  }
+
+  const parsed = riderInput.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "invalid" };
+
+  const { passengerId, birthDate, ...names } = parsed.data;
+
+  try {
+    const written = await passengers.updateManagedPassenger(
+      passengerId,
+      session.user.id,
+      { ...names, birthDate: new Date(`${birthDate}T00:00:00Z`) },
+    );
+    if (!written) return { ok: false, error: "notYours" };
+
+    revalidatePassenger();
+    revalidatePath(`${PASSENGER}/profile`);
+    return { ok: true };
+  } catch (error) {
+    console.error("[passenger] rider update failed", error);
     return { ok: false, error: "generic" };
   }
 }

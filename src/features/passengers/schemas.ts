@@ -11,3 +11,13 @@ export const passengerInput = z.object({
   gender,
 });
 export type PassengerInput = z.infer<typeof passengerInput>;
+
+/** What a rider's own people may change: a name, a birthday, a gender. Not the
+ *  chapter — moving between chapters is leaving one, not editing a field. */
+export const passengerDetails = passengerInput.pick({
+  firstName: true,
+  lastName: true,
+  birthDate: true,
+  gender: true,
+});
+export type PassengerDetailsInput = z.infer<typeof passengerDetails>;

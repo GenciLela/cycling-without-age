@@ -1,11 +1,12 @@
-import { passengerInput } from "./schemas";
-import type { PassengerInput } from "./schemas";
+import { passengerDetails, passengerInput } from "./schemas";
+import type { PassengerDetailsInput, PassengerInput } from "./schemas";
 import {
   countPassengersManagedBy,
   findPassengerOfUser,
   findPassengersManagedBy,
   findPassengersOfChapters,
   insertPassenger,
+  updatePassengerManagedBy,
   upsertOwnPassenger,
 } from "./services/passengers";
 
@@ -53,4 +54,18 @@ export async function saveOwnPassenger(input: PassengerInput) {
     chapterId: existing.chapterId,
     managedByUserId: existing.managedByUserId,
   });
+}
+
+/**
+ * Correcting a rider's details. `false` means the row is not this account's —
+ * the scope lives in the query, so the caller cannot get it wrong and the
+ * facade stays free of session context.
+ */
+export async function updateManagedPassenger(
+  id: string,
+  managedByUserId: string,
+  input: PassengerDetailsInput,
+) {
+  const data = passengerDetails.parse(input);
+  return (await updatePassengerManagedBy(id, managedByUserId, data)) === 1;
 }

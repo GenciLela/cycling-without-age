@@ -12,6 +12,7 @@ import { formatDate, resolveLocale } from "@/lib/format";
 import { getDictionary, getLocale } from "@/lib/i18n";
 import { isPhoneTempEmail } from "@/lib/identity";
 import { PERSPECTIVE_HOME } from "@/lib/redirects";
+import { fill } from "@/lib/utils";
 import { AccountDialog } from "@/components/account-dialog";
 import { LanguagePicker } from "@/components/language-picker";
 import { PersonAvatar } from "@/components/person-avatar";
@@ -86,13 +87,12 @@ async function Profile() {
 
       {own ? (
         <Panel title={strings.rider}>
-          <Row
-            label={strings.rider}
-            value={`${own.firstName} ${own.lastName}`}
-          />
-          <Row
-            label={strings.born}
+          <RiderLink
+            href={`/passenger/profile/${own.id}`}
+            label={`${own.firstName} ${own.lastName}`}
             value={formatDate(own.birthDate, notation)}
+            aria={fill(strings.editAria, { name: own.firstName })}
+            action={strings.edit}
           />
         </Panel>
       ) : null}
@@ -100,10 +100,13 @@ async function Profile() {
       {managed.length > 0 ? (
         <Panel title={strings.managed}>
           {managed.map((person) => (
-            <Row
+            <RiderLink
               key={person.id}
+              href={`/passenger/profile/${person.id}`}
               label={`${person.firstName} ${person.lastName}`}
               value={formatDate(person.birthDate, notation)}
+              aria={fill(strings.editAria, { name: person.firstName })}
+              action={strings.edit}
             />
           ))}
         </Panel>
@@ -203,6 +206,36 @@ function Panel({
         {children}
       </dl>
     </section>
+  );
+}
+
+function RiderLink({
+  href,
+  label,
+  value,
+  aria,
+  action,
+}: {
+  href: string;
+  label: string;
+  value: string;
+  aria: string;
+  action: string;
+}) {
+  return (
+    <Link
+      href={href}
+      aria-label={aria}
+      className="flex min-h-14 flex-wrap items-baseline justify-between gap-2 px-5 py-3 transition-colors hover:bg-mint-tint focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink motion-reduce:transition-none"
+    >
+      <span className="font-medium">{label}</span>
+      <span className="flex items-baseline gap-3">
+        <span className="text-2sm text-ink-soft">{value}</span>
+        <span className="text-2sm font-medium underline underline-offset-4">
+          {action}
+        </span>
+      </span>
+    </Link>
   );
 }
 

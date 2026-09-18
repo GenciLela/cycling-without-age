@@ -48,3 +48,14 @@ export const findPassengersOfChapters = (chapterIds: string[]) =>
 
 export const countPassengersManagedBy = (managedByUserId: string) =>
   prisma.passenger.count({ where: { managedByUserId } });
+
+/** The scope is the WHERE clause on purpose: a rider id that belongs to another
+ *  account matches nothing and returns 0, so there is no separate check to
+ *  forget. */
+export const updatePassengerManagedBy = async (
+  id: string,
+  managedByUserId: string,
+  data: Prisma.PassengerUpdateManyMutationInput,
+) =>
+  (await prisma.passenger.updateMany({ where: { id, managedByUserId }, data }))
+    .count;
