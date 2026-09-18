@@ -578,7 +578,59 @@ refuses a second open request for the same rider on the same day. `preferredDate
 that is stored.
 
 Per CWA's ride models the schema has to grow a destination and a return leg without a
-rewrite; nothing here forecloses that, and nothing here pretends to implement it.
+rewrite; nothing here forecloses that, and nothing here pretends to implement it. Concretely:
+`RideRequest` is **not** a `Ride`. The Functional model (cwa-context reference 04, §Functional; requirement ID 205)
+needs pickup and drop-off as first-class fields, a round trip stored as two ride events, and
+recurring requests that produce many rides from one request — none of which fit this row, and
+all of which COD-155/COD-179 will introduce. Everything the passenger perspective renders goes
+through `toRideView`, which is therefore the single seam to re-point when the `Ride` entity
+lands.
+
+### The chapter's answer, and why it has an author
+
+A request used to be born `requested` and die `requested`: `updateRideRequestStatus` was only
+ever reached by `cancelRide`, so every status the passenger view rendered was decoration.
+`rides.decideRide` and `rides.completeRide` are the two transitions that close that loop.
+
+Only a `requested` row may be answered. That is not politeness — it is what stops two admins
+working the same list from overwriting each other's answer; the second one is told
+`alreadyDecided` rather than silently winning. `completeRide` is stricter still: a `confirmed`
+row whose day has come, because "done" is a claim about the past and hours must not enter the
+statistics before anybody rode. The day itself counts — a roster is closed at the ride
+location, on the day. The admin table's `canComplete` hides the button on the same rule, but
+the rule lives in the facade; the flag only spares an admin a refusal.
+
+The row records **who** answered and **why**: `decidedAt`, `decidedByUserId`, and a free-text
+`declineReason` that is shown to the passenger word for word. A reason is kept only on a
+decline — carrying one on a confirmation would put an explanation under a yes, where it reads
+as a caveat. Nothing notifies the passenger yet; that is COD-180's pipeline, and the row is
+already shaped for it.
+
+`app/admin/rides/actions` reads the request for its `chapterId` behind `requireAuth`, then
+hands *that* chapter to `requireChapterAdmin`. The read-before-guard order is the same one the
+pilot-application action uses, and for the same reason: a caller must never be able to nominate
+the chapter they are checked against.
+
+### One ride, one page
+
+`/passenger/rides/[id]` exists because the list card had grown into a detail page — a note, a
+date line, a cancel button — and still had nowhere to put the chapter's reason for saying no.
+The card is now a link; the story, the reason, the dates and the cancel button live on the
+ride's own page.
+
+Its authorisation is the same lookup the booking rests on: the ride must be in
+`listPassengerRides(session.user.id)`, and anything else is `notFound()` rather than
+`forbidden()` — a 403 would confirm that the id exists.
+
+### Riders correct their own details
+
+`passengers.updateManagedPassenger` is scoped by `updateMany({ where: { id, managedByUserId } })`.
+The authorisation *is* the query: a rider id belonging to another account matches no row,
+returns a count of 0, and the Action answers `notYours`. That is what lets the facade stay free
+of session context while still being safe to call from a script.
+
+The chapter is deliberately not editable there. Moving between chapters is leaving one, not
+editing a field.
 
 ### The authorisation is the lookup, and then the membership
 

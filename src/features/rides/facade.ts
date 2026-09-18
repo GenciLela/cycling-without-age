@@ -153,11 +153,19 @@ export async function decideRide(
   });
 }
 
-/** The ride happened. Only a confirmed one can have. */
+/**
+ * The ride happened. Only a confirmed one can have, and only one whose day has
+ * come — "done" is a claim about the past, and a chapter tidying its list
+ * forward would put hours into the statistics before anybody rode.
+ *
+ * The day itself counts: a roster is closed at the ride location, on the day.
+ */
 export async function completeRide(id: string, now: Date = new Date()) {
   const existing = await findRideRequestById(id);
   if (!existing) return null;
   if (existing.status !== "confirmed")
+    throw new RideRequestError("notCompletable");
+  if (startOfUtcDay(existing.preferredDate) > startOfUtcDay(now))
     throw new RideRequestError("notCompletable");
 
   return updateRideRequestDecision(id, {

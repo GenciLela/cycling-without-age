@@ -69,11 +69,12 @@ async function Rides({ searchParams }: { searchParams: AdminSearchParams }) {
         ? request.requestedBy.email
         : (request.requestedBy.phoneNumber ?? null),
     canDecide: request.status === "requested",
-    // Only after the day has passed: "done" is a fact, and offering it on a
-    // ride that has not happened invites a chapter to tidy its list forward.
+    // From the ride's own day onward — a roster is closed at the ride location,
+    // on the day. `rides.completeRide` refuses anything later than that, so this
+    // flag hides a button rather than being the rule.
     canComplete:
       request.status === "confirmed" &&
-      toIsoDateUtc(request.preferredDate) < today,
+      toIsoDateUtc(request.preferredDate) <= today,
   }));
 
   const RidesIcon = ICONS.rides;

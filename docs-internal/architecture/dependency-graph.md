@@ -20,6 +20,7 @@ graph TD
     ACT7[app/admin/countries/actions]
     ACT8[features/accounts/actions]
     ACT9[app/passenger/actions]
+    ACT10[app/admin/rides/actions]
   end
   subgraph Orchestration
     U1[use-cases/build-session-access]
@@ -90,6 +91,7 @@ graph TD
   A --> U15
   A --> F4
   A --> F7
+  ACT9 --> F4
   ACT9 --> F7
   ACT9 --> U14
   U14 --> F2
@@ -116,6 +118,8 @@ graph TD
 
   ADM --> ACT5
   ADM --> ACT6
+  ADM --> ACT10
+  ACT10 --> F7
   ADM --> ACT7
   ADM --> ACT8
   ACT8 --> U10
@@ -236,6 +240,19 @@ already proved, which is domain validation rather than auth and therefore belong
 facade. Both actions are behind `requireAuth` and the booking one behind a per-user rate
 limit; neither needs a chapter guard, because the chapter is read off the rider the account
 already owns rather than accepted from the request.
+
+`updateRiderAction` in the same file (`ACT9 --> F4`) is the other half again: correcting a
+rider touches `passengers` alone, so there is no use case. Its authorisation is inside the
+query — `updateMany` scoped by `managedByUserId` — which is why the facade can stay free of
+session context and still be safe to call from a script, and why a rider id posted from
+outside updates nothing rather than someone else's row.
+
+`app/admin/rides/actions` (ACT10) is single-feature in both directions, so `decideRideAction`
+and `completeRideAction` call `rides` straight. The order inside them is load-bearing: the
+request is read for its `chapterId` behind `requireAuth`, `requireChapterAdmin` is then given
+*that* chapter, and only then is the decision written. It is the same read-before-guard order
+`app/admin/members/actions` uses for pilot applications, and for the same reason — the caller
+must not be able to nominate the chapter they are checked against.
 
 `features/accounts` (F6) has no UI of its own either — its Server Actions (ACT8) are imported
 straight into the admin passengers and members screens, because "provision a user" is not a

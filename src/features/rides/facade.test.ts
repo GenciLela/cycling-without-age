@@ -198,7 +198,11 @@ describe("decideRide", () => {
 
 describe("completeRide", () => {
   it("closes a confirmed ride", async () => {
-    byId.mockResolvedValue({ id: "r1", status: "confirmed" });
+    byId.mockResolvedValue({
+      id: "r1",
+      status: "confirmed",
+      preferredDate: new Date("2026-09-10T00:00:00Z"),
+    });
 
     await completeRide("r1", NOW);
 
@@ -214,5 +218,33 @@ describe("completeRide", () => {
     await expect(completeRide("r1", NOW)).rejects.toMatchObject({
       reason: "notCompletable",
     });
+  });
+
+  it("refuses a ride whose day has not come", async () => {
+    byId.mockResolvedValue({
+      id: "r1",
+      status: "confirmed",
+      preferredDate: new Date("2026-09-12T00:00:00Z"),
+    });
+
+    await expect(completeRide("r1", NOW)).rejects.toMatchObject({
+      reason: "notCompletable",
+    });
+    expect(decide).not.toHaveBeenCalled();
+  });
+
+  it("closes a ride on the day it happened", async () => {
+    byId.mockResolvedValue({
+      id: "r1",
+      status: "confirmed",
+      preferredDate: new Date("2026-09-11T00:00:00Z"),
+    });
+
+    await completeRide("r1", NOW);
+
+    expect(decide).toHaveBeenCalledWith(
+      "r1",
+      expect.objectContaining({ status: "completed" }),
+    );
   });
 });
