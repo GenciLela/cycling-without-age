@@ -3,17 +3,12 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { chapters } from "@/features/chapters";
 import { passengers } from "@/features/passengers";
-import { RIDE_HORIZON_DAYS } from "@/features/rides";
 import { requirePerspective } from "@/lib/auth-guards";
-import {
-  formatWeekdayDateLong,
-  resolveLocale,
-  toIsoDateUtc,
-  type Locale,
-} from "@/lib/format";
+import { resolveLocale } from "@/lib/format";
 import { getDictionary } from "@/lib/i18n";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookRide, type DayOption } from "./_components/book-ride";
+import { BookRide } from "./_components/book-ride";
+import { bookableDays } from "./bookable-days";
 
 export default function BookRidePage() {
   return (
@@ -35,31 +30,6 @@ function BookSkeleton() {
       <Skeleton className="h-16 w-full rounded-(--r-card)" />
     </div>
   );
-}
-
-/**
- * The bookable days, written out on the server so the list is identical in both
- * renders and `Intl` never reaches the browser. It starts tomorrow: a chapter
- * needs a day to find a pilot, and offering today would mostly produce requests
- * nobody can honour.
- */
-function bookableDays(locale: Locale, tomorrowLabel: string): DayOption[] {
-  const now = new Date();
-  const start = Date.UTC(
-    now.getUTCFullYear(),
-    now.getUTCMonth(),
-    now.getUTCDate(),
-  );
-  const day = 24 * 60 * 60 * 1000;
-
-  return Array.from({ length: RIDE_HORIZON_DAYS - 2 }, (_, index) => {
-    const date = new Date(start + (index + 1) * day);
-    return {
-      iso: toIsoDateUtc(date),
-      label: formatWeekdayDateLong(date, locale),
-      badge: index === 0 ? tomorrowLabel : null,
-    };
-  });
 }
 
 async function Book() {

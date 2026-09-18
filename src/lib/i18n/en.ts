@@ -823,6 +823,8 @@ const en = {
       findChapter: "Find a chapter",
       guestBody:
         "Sign in and a volunteer will take you out at walking pace — nothing between you and the street.",
+      guestCta: "Sign in and book",
+      guestHint: "It takes a minute. Your chapter needs a name to call.",
     },
     when: {
       morning: "In the morning",
@@ -843,7 +845,7 @@ const en = {
       next: "Continue",
       step: "Step {current} of {total}",
       dayTitle: "Which day would you like to ride?",
-      dayHint: "Pick a day in the next four weeks.",
+      dayHint: "Pick a day in the next month.",
       tomorrow: "Tomorrow",
       whenTitle: "What time of day suits you?",
       whoTitle: "Who is coming along?",
@@ -868,7 +870,7 @@ const en = {
         unknownPassenger: "We couldn't find that rider on your account.",
         notAMember:
           "Your chapter has ended your membership, so rides can't be booked here. Get in touch with them if that's a surprise.",
-        outOfRange: "Please pick a day within the next four weeks.",
+        outOfRange: "Please pick a day within the next month.",
         duplicate: "You've already asked for a ride that day.",
         tooMany:
           "That's a lot of requests at once. Try again in a few minutes.",
@@ -937,6 +939,11 @@ const en = {
       genders: { female: "Woman", male: "Man", other: "Other" },
       edit: "Change",
       editAria: "Change {name}'s details",
+    },
+    error: {
+      title: "That didn't load",
+      body: "Something went wrong on our side. Try again — and if it keeps happening, your chapter can help.",
+      retry: "Try again",
     },
     rider: {
       titleOwn: "Your details",

@@ -846,6 +846,9 @@ const de: Dictionary = {
       findChapter: "Ortsgruppe finden",
       guestBody:
         "Melden Sie sich an, und jemand nimmt Sie im Schritttempo mit — nichts zwischen Ihnen und der Straße.",
+      guestCta: "Anmelden und buchen",
+      guestHint:
+        "Das dauert eine Minute. Ihre Ortsgruppe braucht einen Namen, den sie anrufen kann.",
     },
     when: {
       morning: "Am Vormittag",
@@ -866,7 +869,7 @@ const de: Dictionary = {
       next: "Weiter",
       step: "Schritt {current} von {total}",
       dayTitle: "An welchem Tag möchten Sie fahren?",
-      dayHint: "Wählen Sie einen Tag in den nächsten vier Wochen.",
+      dayHint: "Wählen Sie einen Tag im nächsten Monat.",
       tomorrow: "Morgen",
       whenTitle: "Welche Tageszeit passt Ihnen?",
       whoTitle: "Wer fährt mit?",
@@ -893,7 +896,7 @@ const de: Dictionary = {
           "Diesen Fahrgast konnten wir Ihrem Konto nicht zuordnen.",
         notAMember:
           "Ihre Ortsgruppe hat Ihre Mitgliedschaft beendet, deshalb sind hier keine Fahrten mehr buchbar. Melden Sie sich bei ihr, falls Sie das überrascht.",
-        outOfRange: "Bitte wählen Sie einen Tag in den nächsten vier Wochen.",
+        outOfRange: "Bitte wählen Sie einen Tag im nächsten Monat.",
         duplicate: "Für diesen Tag haben Sie bereits eine Fahrt angefragt.",
         tooMany:
           "Das waren viele Anfragen auf einmal. Bitte in ein paar Minuten noch einmal.",
@@ -963,6 +966,11 @@ const de: Dictionary = {
       genders: { female: "Frau", male: "Mann", other: "Divers" },
       edit: "Ändern",
       editAria: "Angaben von {name} ändern",
+    },
+    error: {
+      title: "Das hat sich nicht laden lassen",
+      body: "Bei uns ist etwas schiefgegangen. Versuchen Sie es noch einmal — wenn es weiter hakt, hilft Ihnen Ihre Ortsgruppe.",
+      retry: "Noch einmal versuchen",
     },
     rider: {
       titleOwn: "Ihre Angaben",

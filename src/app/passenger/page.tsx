@@ -48,15 +48,18 @@ async function Home() {
   const { home } = dict.passenger;
 
   // A guest keeps browsing — the chapter page sends people here before they
-  // have an account, and turning that into a sign-in wall loses them.
+  // have an account, and turning that into a sign-in wall loses them. The CTA
+  // still leads to /passenger/book, which needs one: `requireAuth` sends them
+  // through sign-in with `?next=`, so they land back on the booking flow. The
+  // label says that rather than promising a booking it cannot finish.
   if (!session) {
     return (
       <Guest
         title={home.greetingGuest}
         body={home.guestBody}
         signIn={home.signIn}
-        book={home.book}
-        hint={home.bookHint}
+        book={home.guestCta}
+        hint={home.guestHint}
       />
     );
   }

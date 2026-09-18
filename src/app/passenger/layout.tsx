@@ -1,5 +1,9 @@
 import { Suspense, type ReactNode } from "react";
 import { getDictionary } from "@/lib/i18n";
+import {
+  PassengerError,
+  PassengerErrorScreen,
+} from "./_components/passenger-error";
 import { PassengerNav } from "./_components/passenger-nav";
 
 /**
@@ -18,13 +22,26 @@ export default function PassengerLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-svh flex-1 flex-col bg-canvas text-lg">
       <div className="flex flex-1 flex-col pb-[calc(4rem+env(safe-area-inset-bottom))]">
-        {children}
+        <PassengerError
+          screen={
+            <Suspense fallback={null}>
+              <ErrorScreen />
+            </Suspense>
+          }
+        >
+          {children}
+        </PassengerError>
       </div>
       <Suspense fallback={null}>
         <Nav />
       </Suspense>
     </div>
   );
+}
+
+async function ErrorScreen() {
+  const dict = await getDictionary();
+  return <PassengerErrorScreen strings={dict.passenger.error} />;
 }
 
 async function Nav() {

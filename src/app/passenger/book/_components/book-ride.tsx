@@ -11,9 +11,9 @@ import { haptics } from "@/lib/native/haptics";
 import { cn, fill } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import type { DayOption } from "../bookable-days";
 import { bookRide } from "../../actions";
 
-export type DayOption = { iso: string; label: string; badge: string | null };
 type Person = { id: string; name: string };
 
 type BookStrings = Dictionary["passenger"]["book"];

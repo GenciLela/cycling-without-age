@@ -822,6 +822,9 @@ const da: Dictionary = {
       findChapter: "Find en lokalafdeling",
       guestBody:
         "Log ind, så tager en frivillig dig med ud i gåtempo — intet mellem dig og gaden.",
+      guestCta: "Log ind og book",
+      guestHint:
+        "Det tager et minut. Din lokalafdeling skal bruge et navn at ringe til.",
     },
     when: {
       morning: "Om formiddagen",
@@ -842,7 +845,7 @@ const da: Dictionary = {
       next: "Videre",
       step: "Trin {current} af {total}",
       dayTitle: "Hvilken dag vil du gerne køre?",
-      dayHint: "Vælg en dag inden for de næste fire uger.",
+      dayHint: "Vælg en dag inden for den næste måned.",
       tomorrow: "I morgen",
       whenTitle: "Hvilket tidspunkt passer dig?",
       whoTitle: "Hvem skal med?",
@@ -866,7 +869,7 @@ const da: Dictionary = {
         unknownPassenger: "Vi kunne ikke finde den passager på din konto.",
         notAMember:
           "Din lokalafdeling har afsluttet dit medlemskab, så her kan der ikke bestilles ture. Kontakt dem, hvis det kommer bag på dig.",
-        outOfRange: "Vælg en dag inden for de næste fire uger.",
+        outOfRange: "Vælg en dag inden for den næste måned.",
         duplicate: "Du har allerede bedt om en tur den dag.",
         tooMany:
           "Det var mange anmodninger på én gang. Prøv igen om få minutter.",
@@ -935,6 +938,11 @@ const da: Dictionary = {
       genders: { female: "Kvinde", male: "Mand", other: "Andet" },
       edit: "Ret",
       editAria: "Ret {name}s oplysninger",
+    },
+    error: {
+      title: "Det kunne ikke indlæses",
+      body: "Noget gik galt hos os. Prøv igen — og bliver det ved, hjælper din lokalafdeling dig.",
+      retry: "Prøv igen",
     },
     rider: {
       titleOwn: "Dine oplysninger",
