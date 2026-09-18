@@ -10,6 +10,9 @@ const forPassenger = {
   timeOfDay: true,
   note: true,
   status: true,
+  cancelledAt: true,
+  decidedAt: true,
+  declineReason: true,
   createdAt: true,
   chapter: { select: { name: true, city: true } },
   passenger: { select: { firstName: true, lastName: true } },
@@ -59,3 +62,13 @@ export const updateRideRequestStatus = (
   cancelledAt: Date | null,
 ) =>
   prisma.rideRequest.update({ where: { id }, data: { status, cancelledAt } });
+
+export const updateRideRequestDecision = (
+  id: string,
+  data: {
+    status: RideRequestStatus;
+    decidedAt: Date;
+    decidedByUserId: string | null;
+    declineReason: string | null;
+  },
+) => prisma.rideRequest.update({ where: { id }, data });

@@ -1,5 +1,7 @@
 import {
   cancelRide,
+  completeRide,
+  decideRide,
   requestRide,
   rideDateWindow,
   RideRequestError,
@@ -8,6 +10,7 @@ import {
   findOpenRideRequestOn,
   findRideRequestById,
   insertRideRequest,
+  updateRideRequestDecision,
   updateRideRequestStatus,
 } from "./services/ride-requests";
 
@@ -17,6 +20,7 @@ jest.mock("./services/ride-requests", () => ({
   findRideRequestsOfChapters: jest.fn(),
   findRideRequestsOfPassengers: jest.fn(),
   insertRideRequest: jest.fn(),
+  updateRideRequestDecision: jest.fn(),
   updateRideRequestStatus: jest.fn(),
 }));
 
@@ -24,6 +28,7 @@ const clash = findOpenRideRequestOn as jest.Mock;
 const byId = findRideRequestById as jest.Mock;
 const insert = insertRideRequest as jest.Mock;
 const setStatus = updateRideRequestStatus as jest.Mock;
+const decide = updateRideRequestDecision as jest.Mock;
 
 const NOW = new Date("2026-09-11T09:00:00Z");
 
@@ -140,5 +145,74 @@ describe("cancelRide", () => {
       reason: "notCancellable",
     });
     expect(setStatus).not.toHaveBeenCalled();
+  });
+});
+
+describe("decideRide", () => {
+  it("stamps the answer with who gave it and when", async () => {
+    byId.mockResolvedValue({ id: "r1", status: "requested" });
+
+    await decideRide("r1", { decision: "confirmed" }, "admin1", NOW);
+
+    expect(decide).toHaveBeenCalledWith("r1", {
+      status: "confirmed",
+      decidedAt: NOW,
+      decidedByUserId: "admin1",
+      declineReason: null,
+    });
+  });
+
+  it("keeps the reason only on a decline", async () => {
+    byId.mockResolvedValue({ id: "r1", status: "requested" });
+
+    await decideRide(
+      "r1",
+      { decision: "confirmed", declineReason: "no pilot" },
+      "admin1",
+      NOW,
+    );
+
+    expect(decide).toHaveBeenCalledWith(
+      "r1",
+      expect.objectContaining({ declineReason: null }),
+    );
+  });
+
+  it("refuses a request that was already answered", async () => {
+    byId.mockResolvedValue({ id: "r1", status: "confirmed" });
+
+    await expect(
+      decideRide("r1", { decision: "declined" }, "admin1", NOW),
+    ).rejects.toMatchObject({ reason: "alreadyDecided" });
+    expect(decide).not.toHaveBeenCalled();
+  });
+
+  it("reports a missing request as null rather than throwing", async () => {
+    byId.mockResolvedValue(null);
+
+    await expect(
+      decideRide("r1", { decision: "confirmed" }, "admin1", NOW),
+    ).resolves.toBeNull();
+  });
+});
+
+describe("completeRide", () => {
+  it("closes a confirmed ride", async () => {
+    byId.mockResolvedValue({ id: "r1", status: "confirmed" });
+
+    await completeRide("r1", NOW);
+
+    expect(decide).toHaveBeenCalledWith(
+      "r1",
+      expect.objectContaining({ status: "completed" }),
+    );
+  });
+
+  it("refuses a ride nobody confirmed", async () => {
+    byId.mockResolvedValue({ id: "r1", status: "requested" });
+
+    await expect(completeRide("r1", NOW)).rejects.toMatchObject({
+      reason: "notCompletable",
+    });
   });
 });

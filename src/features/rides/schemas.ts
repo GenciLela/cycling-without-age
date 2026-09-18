@@ -54,3 +54,14 @@ export const OPEN_STATUSES = ["requested", "confirmed"] as const;
 
 export const isOpen = (status: RideRequestStatus) =>
   (OPEN_STATUSES as readonly string[]).includes(status);
+
+/** The two answers a chapter gives a request. Cancelling is the passenger's own
+ *  verb and keeps its own path. */
+export const rideDecision = z.enum(["confirmed", "declined"]);
+export type RideDecision = z.infer<typeof rideDecision>;
+
+export const rideDecisionInput = z.object({
+  decision: rideDecision,
+  declineReason: z.string().trim().max(500).optional(),
+});
+export type RideDecisionInput = z.infer<typeof rideDecisionInput>;

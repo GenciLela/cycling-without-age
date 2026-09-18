@@ -55,6 +55,7 @@ model User {
   passengers          Passenger[]          @relation("manages")
   passengerProfile    Passenger?           @relation("self")
   rideRequests        RideRequest[]        @relation("rideRequester")
+  decidedRideRequests RideRequest[]        @relation("rideDecider")
   activityEvents      ActivityEvent[]      @relation("activitySubject")
   activityActions     ActivityEvent[]      @relation("activityActor")
 
@@ -332,12 +333,20 @@ model RideRequest {
   status      RideRequestStatus @default(requested)
   cancelledAt DateTime?
 
+  /// Who answered, and when. `declineReason` is shown to the passenger word for
+  /// word, so it is written by a person and never generated.
+  decidedAt       DateTime?
+  decidedByUserId String?
+  decidedBy       User?     @relation("rideDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+  declineReason   String?   @db.Text
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([chapterId, preferredDate])
   @@index([passengerId, preferredDate])
   @@index([requestedByUserId])
+  @@index([decidedByUserId])
   @@map("ride_request")
 }
 

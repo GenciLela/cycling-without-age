@@ -64,7 +64,7 @@ export async function requestPassengerRide({
   } catch (error) {
     if (
       error instanceof RideRequestError &&
-      error.reason !== "notCancellable"
+      (error.reason === "outOfRange" || error.reason === "duplicate")
     ) {
       return { ok: false, reason: error.reason };
     }

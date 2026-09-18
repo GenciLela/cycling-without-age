@@ -2,15 +2,17 @@ import {
   isOpen,
   OPEN_STATUSES,
   RIDE_HORIZON_DAYS,
+  rideDecisionInput,
   rideRequestInput,
 } from "./schemas";
-import type { RideRequestInput } from "./schemas";
+import type { RideDecisionInput, RideRequestInput } from "./schemas";
 import {
   findOpenRideRequestOn,
   findRideRequestById,
   findRideRequestsOfChapters,
   findRideRequestsOfPassengers,
   insertRideRequest,
+  updateRideRequestDecision,
   updateRideRequestStatus,
 } from "./services/ride-requests";
 
@@ -23,7 +25,14 @@ export type ChapterRideRequest = Awaited<
 >[number];
 
 export class RideRequestError extends Error {
-  constructor(readonly reason: "outOfRange" | "duplicate" | "notCancellable") {
+  constructor(
+    readonly reason:
+      | "outOfRange"
+      | "duplicate"
+      | "notCancellable"
+      | "alreadyDecided"
+      | "notCompletable",
+  ) {
     super(reason);
     this.name = "RideRequestError";
   }
@@ -112,4 +121,49 @@ export async function cancelRide(id: string, byUserId: string) {
   if (!isOpen(existing.status)) throw new RideRequestError("notCancellable");
 
   return updateRideRequestStatus(id, "cancelled", new Date());
+}
+
+export const getRequest = (id: string) => findRideRequestById(id);
+
+/**
+ * Phase 2 of the ride lifecycle, in its smallest honest form: a human answers.
+ * Only a `requested` row may be answered, so two admins racing on the same list
+ * cannot overwrite each other's answer — the second one is told it was decided.
+ */
+export async function decideRide(
+  id: string,
+  input: RideDecisionInput,
+  decidedByUserId: string,
+  now: Date = new Date(),
+) {
+  const { decision, declineReason } = rideDecisionInput.parse(input);
+
+  const existing = await findRideRequestById(id);
+  if (!existing) return null;
+  if (existing.status !== "requested")
+    throw new RideRequestError("alreadyDecided");
+
+  return updateRideRequestDecision(id, {
+    status: decision,
+    decidedAt: now,
+    decidedByUserId,
+    // A reason belongs to a refusal. Carrying one on a confirmation would put
+    // an explanation under a yes, where the passenger reads it as a caveat.
+    declineReason: decision === "declined" ? (declineReason ?? null) : null,
+  });
+}
+
+/** The ride happened. Only a confirmed one can have. */
+export async function completeRide(id: string, now: Date = new Date()) {
+  const existing = await findRideRequestById(id);
+  if (!existing) return null;
+  if (existing.status !== "confirmed")
+    throw new RideRequestError("notCompletable");
+
+  return updateRideRequestDecision(id, {
+    status: "completed",
+    decidedAt: existing.decidedAt ?? now,
+    decidedByUserId: existing.decidedByUserId,
+    declineReason: null,
+  });
 }
