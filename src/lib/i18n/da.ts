@@ -690,9 +690,31 @@ const da: Dictionary = {
         chapter: "Lokalafdeling",
         asked: "Bedt om",
         contact: "Bestilt af",
+        actions: "Svar",
       },
       empty:
-        "Ingen turanmodninger endnu. Så snart en passager beder om en, lander den her.",
+        "Ingen turanmodninger endnu. S\u00e5 snart en passager beder om en, lander den her.",
+      decide: {
+        confirm: "Bekr\u00e6ft",
+        decline: "Afvis",
+        complete: "Mark\u00e9r som k\u00f8rt",
+        answered: "Besvaret",
+        declineTitle: "Afvis turen for {rider} den {day}?",
+        declineBody:
+          "Personen ser dit svar med det samme og l\u00e6ser begrundelsen ord for ord. Du m\u00e5 gerne lade den st\u00e5 tom.",
+        reasonLabel: "Begrundelse (valgfrit)",
+        reasonPlaceholder:
+          "Ingen pilot er ledig den formiddag \u2014 vi foresl\u00e5r en anden dag.",
+        declineConfirm: "Afvis turen",
+        keep: "Tilbage",
+        confirmed: "Bekr\u00e6ftet.",
+        declined: "Afvist.",
+        completed: "Markeret som k\u00f8rt.",
+        errors: {
+          alreadyDecided: "Foresp\u00f8rgslen er allerede besvaret.",
+          generic: "Det virkede ikke. Pr\u00f8v igen.",
+        },
+      },
     },
     passengers: {
       add: {

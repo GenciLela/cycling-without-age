@@ -711,9 +711,31 @@ const de: Dictionary = {
         chapter: "Ortsgruppe",
         asked: "Angefragt",
         contact: "Gebucht von",
+        actions: "Antwort",
       },
       empty:
         "Noch keine Fahrtanfragen. Sobald ein Passagier eine stellt, landet sie hier.",
+      decide: {
+        confirm: "Zusagen",
+        decline: "Absagen",
+        complete: "Als gefahren markieren",
+        answered: "Beantwortet",
+        declineTitle: "Fahrt von {rider} am {day} absagen?",
+        declineBody:
+          "Die Person sieht deine Antwort sofort und liest den Grund wortw\u00f6rtlich. Du kannst ihn auch leer lassen.",
+        reasonLabel: "Grund (freiwillig)",
+        reasonPlaceholder:
+          "An dem Vormittag ist kein Pilot frei \u2014 wir bieten einen anderen Tag an.",
+        declineConfirm: "Fahrt absagen",
+        keep: "Zur\u00fcck",
+        confirmed: "Zugesagt.",
+        declined: "Abgesagt.",
+        completed: "Als gefahren markiert.",
+        errors: {
+          alreadyDecided: "Diese Anfrage wurde schon beantwortet.",
+          generic: "Das hat nicht geklappt. Versuch es noch einmal.",
+        },
+      },
     },
     passengers: {
       add: {

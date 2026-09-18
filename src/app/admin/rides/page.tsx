@@ -50,7 +50,8 @@ async function Rides({ searchParams }: { searchParams: AdminSearchParams }) {
   ]);
 
   const notation = resolveLocale(head.get("accept-language"));
-  const { columns, empty } = dict.admin.rides;
+  const today = toIsoDateUtc(new Date());
+  const { columns, empty, decide } = dict.admin.rides;
 
   const rows: AdminRideRow[] = list.map((request) => ({
     id: request.id,
@@ -67,6 +68,12 @@ async function Rides({ searchParams }: { searchParams: AdminSearchParams }) {
       request.requestedBy.email && !isPhoneTempEmail(request.requestedBy.email)
         ? request.requestedBy.email
         : (request.requestedBy.phoneNumber ?? null),
+    canDecide: request.status === "requested",
+    // Only after the day has passed: "done" is a fact, and offering it on a
+    // ride that has not happened invites a chapter to tidy its list forward.
+    canComplete:
+      request.status === "confirmed" &&
+      toIsoDateUtc(request.preferredDate) < today,
   }));
 
   const RidesIcon = ICONS.rides;
@@ -85,6 +92,7 @@ async function Rides({ searchParams }: { searchParams: AdminSearchParams }) {
             label: dict.passenger.status[status],
           }))}
           table={dict.admin.table}
+          decide={decide}
         />
       ) : (
         <Empty className="rounded-2xl border border-line">

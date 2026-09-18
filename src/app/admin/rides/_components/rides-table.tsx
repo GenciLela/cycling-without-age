@@ -3,11 +3,13 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import {
   DataTable,
+  stopRowClick,
   type DataTableFilter,
   type DataTableStrings,
 } from "@/components/ui/data-table";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { RideDecision, type RideDecisionStrings } from "./ride-decision";
 
 export type AdminRideRow = {
   id: string;
@@ -21,6 +23,8 @@ export type AdminRideRow = {
   asked: string;
   askedIso: string;
   contact: string | null;
+  canDecide: boolean;
+  canComplete: boolean;
 };
 
 const TONE: Record<string, string> = {
@@ -37,6 +41,7 @@ export function RidesTable({
   labels,
   statuses,
   table,
+  decide,
 }: {
   rows: AdminRideRow[];
   showChapter: boolean;
@@ -48,9 +53,11 @@ export function RidesTable({
     chapter: string;
     asked: string;
     contact: string;
+    actions: string;
   };
   statuses: { value: string; label: string }[];
   table: DataTableStrings;
+  decide: RideDecisionStrings;
 }) {
   const columns: ColumnDef<AdminRideRow, unknown>[] = [
     {
@@ -117,6 +124,25 @@ export function RidesTable({
       meta: { label: labels.asked },
       cell: ({ row }) => (
         <span className="text-ink-soft">{row.original.asked}</span>
+      ),
+    },
+    {
+      id: "actions",
+      header: () => labels.actions,
+      enableHiding: false,
+      enableSorting: false,
+      meta: { label: labels.actions },
+      cell: ({ row }) => (
+        <div onClick={stopRowClick}>
+          <RideDecision
+            id={row.original.id}
+            rider={row.original.rider}
+            day={row.original.day}
+            canDecide={row.original.canDecide}
+            canComplete={row.original.canComplete}
+            strings={decide}
+          />
+        </div>
       ),
     },
   ];

@@ -688,9 +688,31 @@ const en = {
         chapter: "Chapter",
         asked: "Asked",
         contact: "Booked by",
+        actions: "Answer",
       },
       empty:
         "No ride requests yet. The moment a passenger asks for one, it lands here.",
+      decide: {
+        confirm: "Confirm",
+        decline: "Decline",
+        complete: "Mark as done",
+        answered: "Answered",
+        declineTitle: "Decline the ride for {rider} on {day}?",
+        declineBody:
+          "They see your answer straight away, and they read the reason word for word. Leaving it empty is fine.",
+        reasonLabel: "Reason (optional)",
+        reasonPlaceholder:
+          "No pilot free that morning \u2014 we'll offer another day.",
+        declineConfirm: "Decline the ride",
+        keep: "Back",
+        confirmed: "Confirmed.",
+        declined: "Declined.",
+        completed: "Marked as done.",
+        errors: {
+          alreadyDecided: "Someone answered this request already.",
+          generic: "That didn't work. Try again.",
+        },
+      },
     },
     passengers: {
       add: {
